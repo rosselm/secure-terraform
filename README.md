@@ -75,19 +75,19 @@ In my case:
 
 The S3 buckets:
 
-![s3-buckets](./pics/s3-buckets.png)
+![s3-buckets](https://github.com/rosselm/secure-terraform/blob/github/pics/s3-buckets.png)
 
 The terraform group policy:
 
-![terraform-group-policy](./pics/terraform-group-policy.png)
+![terraform-group-policy](https://github.com/rosselm/secure-terraform/blob/github/pics/terraform-group-policy.png)
 
 The trust policy:
 
-![terraform-trust-policy.png](./pics/terraform-trust-policy.png)
+![terraform-trust-policy.png](https://github.com/rosselm/secure-terraform/blob/github/pics/terraform-trust-policy.png)
 
 The dynamo db table:
 
-![terraform-dynamo](./pics/terraform-dynamo.png)
+![terraform-dynamo](https://github.com/rosselm/secure-terraform/blob/github/pics/terraform-dynamo.png)
 
 ## Creating access keys for the terraform user ##
 
@@ -100,7 +100,7 @@ for example in my case:
 
 As a result you get:
 
-![create-access-key-result](./pics/aws-iam-create-access-key.png)
+![create-access-key-result](https://github.com/rosselm/secure-terraform/blob/github/pics/aws-iam-create-access-key.png)
 
 Now you can create the profile with:
 
@@ -108,13 +108,13 @@ Now you can create the profile with:
 
 You will be prompted to enter the key id and secret from previous step + default region.
 
-![create-aws-profile](./pics/aws-iam-create-profile.png)
+![create-aws-profile](https://github.com/rosselm/secure-terraform/blob/github/pics/aws-iam-create-profile.png)
 
 ## Enable MFA for the terraform user ##
 
 At last we enable MFA for this user.  This is defnitely the easiest through the AWS console:
 
-![enable-mfa](./pics/aws-iam-mfa.png)
+![enable-mfa](https://github.com/rosselm/secure-terraform/blob/github/pics/aws-iam-mfa.png)
 
 but it can be done through the aws cli also.
 
