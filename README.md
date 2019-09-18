@@ -75,7 +75,7 @@ In my case:
 
 The S3 buckets:
 
-![s3-buckets](.pics/s3-buckets.png)
+![s3-buckets](./pics/s3-buckets.png)
 
 The terraform group policy:
 
