@@ -1,0 +1,67 @@
+#!/bin/bash
+
+deactivate() {
+  unset AWS_PROFILE
+  unset AWS_ACCESS_KEY_ID
+  unset AWS_SECRET_ACCESS_KEY
+  unset AWS_SESSION_TOKEN
+  unset AWS_SECURITY_TOKEN
+  unset AWS_REGION
+  unset AWS_ACCOUNT
+  unset AWS_TOKEN_EXPIRATION
+
+  # you could restore old credentials environment variables here
+  # AWS_xxx=_OLD_AWS_xxx
+  # export AWS_xxx
+
+  # remove function from the environment
+  unset -f deactivate
+}
+
+# you could backup old credentials environment variables here
+# _OLD_AWS_xxx=AWS_xxx
+# export _OLD_AWS_xxx
+
+# first argument for sourcing this script is the AWS profile you want to use - defaults to your use case
+# second argument for sourcing this script is be the AWS role you want to assume with the chosen profile - defaults to your use case
+# third argument for sourcing this script is the duration of the session in seconds - defaults to your use case
+# fourth argument for sourcing this script is the role name -> important for cloud trail/logging - defaults to your use case
+
+# defaults chosen in my case are : 'terraform' using profile 'martin.rosselle.terraform' using default of '3600' seconds
+
+AWS_PROFILE=${1:-martin.rosselle.terraform}
+export AWS_PROFILE
+ROLE_TO_ASSUME=${2:-terraform}
+SESSION_DURATION=${3:-3600}
+ROLE_SESSION_NAME=${4:-$(whoami)}
+AWS_REGION=${5:-eu-west-1}
+
+AWS_ACCOUNT=$(aws sts get-caller-identity --query 'Account' | tr -d '"')
+echo "Determined account: ${AWS_ACCOUNT}"
+
+echo "Please enter your MFA code for profile '$AWS_PROFILE'"
+read MFA_CODE
+
+echo "Assuming role '${ROLE_TO_ASSUME}' with profile '${AWS_PROFILE}' for '${SESSION_DURATION}' seconds"
+CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::${AWS_ACCOUNT}:role/${ROLE_TO_ASSUME}\
+ --role-session-name ${ROLE_SESSION_NAME}\
+ --serial-number arn:aws:iam::${AWS_ACCOUNT}:mfa/${AWS_PROFILE}\
+ --token-code ${MFA_CODE}\
+ --profile ${AWS_PROFILE}\
+ --region $AWS_REGION\
+ --output text --query 'Credentials')
+CREDENTIALS=$(expand -t 1 <<<$CREDENTIALS)
+
+AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | cut -d ' ' -f 1)
+AWS_TOKEN_EXPIRATION=$(echo $CREDENTIALS | cut -d ' ' -f 2)
+AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | cut -d ' ' -f 3)
+AWS_SESSION_TOKEN=$(echo $CREDENTIALS | cut -d ' ' -f 4)
+
+export AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY
+export AWS_SESSION_TOKEN
+
+echo "You temporary credentials are valid until ${AWS_TOKEN_EXPIRATION} - UTC time"
+
+echo "You new AWS identity is:"
+aws sts get-caller-identity --output table
