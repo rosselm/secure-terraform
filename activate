@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export AWS_PAGER=""
+
 deactivate() {
   unset AWS_PROFILE
   unset AWS_ACCESS_KEY_ID
